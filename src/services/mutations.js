@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser } from './api'
+import { createUser, deleteUser, updateUser } from './api'
 
-export function userCreateUser() {
+export function useCreateUser() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -14,18 +14,55 @@ export function userCreateUser() {
     onError: () => {
       console.log('onError')
     },
-    onSuccess: (newUser) => {
+    onSuccess: () => {
       console.log('onSuccess')
-      // Update the 'users' query data with the new user
-      queryClient.setQueryData(['users'], (oldUsers) => {
-        const updatedUsers = [...oldUsers, newUser];
-        console.log('Updated users:', updatedUsers);
-        return updatedUsers;
-      })
-      console.log('pass')
     },
     onSettled: async (_, error) => {
       console.log('onSettled')
+      if (error) {
+        console.log(error)
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ['users'] })
+      }
+    },
+  })
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data) => updateUser(data),
+    onMutate: () => {
+      console.log('onMutate')
+    },
+    onError: () => {
+      console.log('onError')
+    },
+    onSuccess: () => {
+      console.log('onSuccess')
+    },
+    onSettled: async (_, error, variables) => {
+      console.log('onSettled')
+      if (error) {
+        console.log(error)
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ['users'] })
+        await queryClient.invalidateQueries({ queryKey: ['user', { id: variables.id }] })
+      }
+    },
+  })
+}
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id) => deleteUser(id),
+    onSuccess: () => {
+      console.log('onSuccess')
+    },
+    onSettled: async (_, error) => {
       if (error) {
         console.log(error)
       } else {

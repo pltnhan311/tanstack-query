@@ -1,9 +1,11 @@
-import { Users } from "./components/Users"
+import Projects from './components/Projects'
+import { Users } from './components/Users'
 
 function App() {
   return (
     <>
-      <Users />
+      {/* <Users /> */}
+      <Projects />
     </>
   )
 }
