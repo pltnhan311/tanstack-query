@@ -5,21 +5,25 @@ export const Products = () => {
   const [selectedProductId, setSelectedProductId] = React.useState(null)
 
   const productsQuery = useProducts()
+  const { data } = productsQuery
+  console.log(data)
+  console.log(productsQuery)
   const productQuery = useProduct(selectedProductId)
+
+  console.log(productsQuery.data?.next !== null)
 
   return (
     <>
-      {productsQuery.data?.pages.map((group, index) => (
+      {data?.pages?.map((group, index) => (
         <Fragment key={index}>
-          {group.map((product) => (
-            <>
-              <button
-                style={{ display: 'flex', margin: '5px' }}
-                onClick={() => setSelectedProductId(product.id)}
-              >
-                {product.model}
-              </button>
-            </>
+          {group?.data?.map((product) => (
+            <button
+              key={product.id}
+              style={{ display: 'flex', margin: '5px' }}
+              onClick={() => setSelectedProductId(product.id)}
+            >
+              {product.name}
+            </button>
           ))}
         </Fragment>
       ))}
@@ -27,12 +31,18 @@ export const Products = () => {
       <div>
         <button
           onClick={() => productsQuery.fetchNextPage()}
-          disabled={!productsQuery.hasNextPage || productsQuery.isFetchingNextPage}
+          disabled={
+            data?.pages && data.pages.length > 0 && data.pages[data.pages.length - 1].next === null ||
+            !productsQuery.hasNextPage ||
+            productsQuery.isFetchingNextPage
+          }
         >
           {productsQuery.isFetchingNextPage
             ? 'Loading more...'
-            : productsQuery.hasNextPage
-            ? 'Load more'
+            : data?.pages && data.pages.length > 0
+            ? data.pages[data.pages.length - 1].next !== null
+              ? 'Load more'
+              : 'Nothing more to load'
             : 'Nothing more to load'}
         </button>
       </div>

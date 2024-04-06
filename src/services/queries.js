@@ -35,13 +35,13 @@ export function useProducts() {
     queryKey: ['products'],
     queryFn: getProducts,
     initialPageParam: 0,
-    getNextPageParam: (lastPage, _, lastPageParam) => {
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage.length === 0) {
         return undefined
       }
       return lastPageParam + 1
     },
-    getPreviousPageParam: (_, __, firstPageParam) => {
+    getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
       if (firstPageParam <= 1) {
         return undefined
       }
@@ -58,10 +58,10 @@ export const useProduct = (id) => {
     queryFn: () => getProduct(id),
     enabled: !!id,
     placeholderData: () => {
-      const cachedProducts = queryClient.getQueryData(['products']);
+      const cachedProducts = queryClient.getQueryData(['products'])
       if (cachedProducts) {
-        const products = cachedProducts.pages?.flat(2);
-        return products?.find((item) => item.id === id);
+        const products = cachedProducts.pages?.flat(2)
+        return products?.find((item) => item.id === id)
       }
     },
   })

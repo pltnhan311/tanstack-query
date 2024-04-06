@@ -31,7 +31,7 @@ export const getProjects = async (page) => {
 
 export const getProducts = async ({ pageParam }) => {
   const res = await axiosInstance.get(`/products?_page=${pageParam + 1}&_per_page=3`)
-  return res.data.data
+  return res.data
 }
 
 export const getProduct = async (id) => {
