@@ -25,7 +25,15 @@ export const deleteUser = async (id) => {
 
 export const getProjects = async (page) => {
   const res = await axiosInstance.get(`/projects?_page=${page}&_per_page=3`)
-  console.log(res.data)
   return res.data
   // return await axiosInstance.get(`projects?_page=${page}&_limit=3`)
+}
+
+export const getProducts = async ({ pageParam }) => {
+  const res = await axiosInstance.get(`/products?_page=${pageParam + 1}&_per_page=3`)
+  return res.data.data
+}
+
+export const getProduct = async (id) => {
+  return (await axiosInstance.get(`/products/${id}`)).data
 }

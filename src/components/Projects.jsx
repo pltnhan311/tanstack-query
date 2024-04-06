@@ -8,7 +8,7 @@ export default function Projects() {
     useProjects(page)
 
   return (
-    <div>
+    <div style={{ fontFamily: 'arial', color: 'green', lineHeight: '1.4' }}>
       {isPending ? (
         <div>Loading...</div>
       ) : isError ? (
@@ -21,7 +21,8 @@ export default function Projects() {
               {project.name}
             </p>
           ))}
-          <span>Current page: {page}</span>
+              <span>Current page: {page}</span>
+              <br />
           <button onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 1}>Previous Page</button>
           <button
             onClick={() => {
