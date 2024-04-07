@@ -1,5 +1,6 @@
 import { Products } from './components/Products'
 import Projects from './components/Projects'
+import { Todo } from './components/Todo'
 import { Users } from './components/Users'
 
 function App() {
@@ -7,7 +8,8 @@ function App() {
     <>
       {/* <Users /> */}
       {/* <Projects /> */}
-      <Products />
+      {/* <Products /> */}
+      <Todo />
     </>
   )
 }

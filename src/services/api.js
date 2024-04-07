@@ -1,8 +1,20 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:3000'
+// const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'https://dummyjson.com'
 const axiosInstance = axios.create({ baseURL: BASE_URL })
 
+export const getTodoList = async () => {
+  const res = await axiosInstance.get('/todos')
+  // console.log(res.data)
+  return res.data
+}
+
+export const createTodo = async (data) => {
+  const res = await axiosInstance.post('/todos/add', data)
+  console.log(res.data)
+  return res.data
+}
 export const getUsersIds = async () => {
   return (await axiosInstance.get('/users')).data.map((item) => item.id)
 }

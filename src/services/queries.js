@@ -1,6 +1,13 @@
 import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { getProduct, getProducts, getProjects, getUser, getUsersIds } from './api'
+import { getProduct, getProducts, getProjects, getTodoList, getUser, getUsersIds } from './api'
+
+export function useTodos() {
+  return useQuery({
+    queryKey: ['todos'],
+    queryFn: () => getTodoList(),
+  })
+}
 
 export function useUsersIds() {
   return useQuery({

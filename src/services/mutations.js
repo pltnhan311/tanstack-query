@@ -1,5 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, updateUser } from './api'
+import { createTodo, createUser, deleteUser, updateUser } from './api'
+
+export function useCreateTodo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (newTodo) => {
+      return createTodo(newTodo)
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
+    }
+  })
+}
 
 export function useCreateUser() {
   const queryClient = useQueryClient()
