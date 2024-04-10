@@ -1,4 +1,7 @@
 body {
   background: rgb(33, 35, 44);
   color: aliceblue;
+  margin: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
 }

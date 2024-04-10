@@ -1,8 +1,44 @@
 import axios from 'axios'
 
-// const BASE_URL = 'http://localhost:3000'
-const BASE_URL = 'https://dummyjson.com'
+const BASE_URL = 'http://localhost:3000'
+// const BASE_URL = 'https://dummyjson.com'
 const axiosInstance = axios.create({ baseURL: BASE_URL })
+
+export const deleteFood = async (id) => {
+  await axiosInstance.delete(`/foods/${id}`)
+}
+
+export const updateFood = async (data) => {
+  await axiosInstance.put(`/foods/${data.id}`, data)
+}
+
+export const getFoodsIds = async () => {
+  return (await axiosInstance.get('/foods')).data.map((item) => item.id)
+}
+
+export const getFood = async (id) => {
+  const res = await axiosInstance.get(`/foods/${id}`)
+  console.log(res.data)
+  return res.data
+}
+
+export const getFoodsPaginated = async (page = 1) => { 
+  const res = await axiosInstance.get(`foods?_page=${page}&_per_page=4`)
+  console.log(res.data)
+  return res.data
+}
+
+export const getFoods = async ({ pageParam }) => {
+  const res = await axiosInstance.get(`/foods?_page=${pageParam + 1}&_per_page=4`)
+  console.log(res.data)
+  return res.data
+}
+
+export const createFood = async (data) => {
+  const res = await axiosInstance.post('/foods', data)
+  console.log(res.data)
+  return res.data
+}
 
 export const getTodoList = async () => {
   const res = await axiosInstance.get('/todos')
@@ -35,10 +71,8 @@ export const deleteUser = async (id) => {
   await axiosInstance.delete(`/users/${id}`)
 }
 
-export const getProjects = async (page) => {
-  const res = await axiosInstance.get(`/projects?_page=${page}&_per_page=3`)
-  return res.data
-  // return await axiosInstance.get(`projects?_page=${page}&_limit=3`)
+export const getProjects = async (page = 1) => {
+  return await (axiosInstance.get(`projects?_page=${page}&_per_page=3`))
 }
 
 export const getProducts = async ({ pageParam }) => {

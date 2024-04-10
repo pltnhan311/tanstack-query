@@ -1,6 +1,50 @@
 import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { getProduct, getProducts, getProjects, getTodoList, getUser, getUsersIds } from './api'
+import {
+  getFood,
+  getFoods,
+  getFoodsIds,
+  getFoodsPaginated,
+  getProduct,
+  getProducts,
+  getProjects,
+  getTodoList,
+  getUser,
+  getUsersIds,
+} from './api'
+
+export function useFood(id) {
+  const queryClient = useQueryClient()
+
+  return useQuery({
+    queryKey: ['food', { id }],
+    queryFn: () => getFood(id),
+    enabled: !!id, // run if only id is truthy
+    placeholderData: () => {
+      const cachedFoods = queryClient.getQueryData(['foods'])
+      if (cachedFoods) {
+        const foods = cachedFoods.pages?.flat(2)
+        return foods?.find((item) => item.id === id)
+      }
+      return cachedFoods?.find((item) => item.id === id)
+    },
+  })
+}
+
+export function useFoodsPaginated(page) {
+  return useQuery({
+    queryKey: ['foods', { page }],
+    queryFn: () => getFoodsPaginated(page),
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useFoods() {
+  return useQuery({
+    queryKey: ['foods'],
+    queryFn: () => getFoods(),
+  })
+}
 
 export function useTodos() {
   return useQuery({
@@ -37,11 +81,26 @@ export function useProjects(page) {
   })
 }
 
+export function useFoodsInfinite() {
+  return useInfiniteQuery({
+    queryKey: ['foods'],
+    queryFn: getFoods,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage.next === null) {
+        return undefined
+      }
+      return lastPageParam + 1
+    }
+  })
+}
+
 export function useProducts() {
   return useInfiniteQuery({
     queryKey: ['products'],
     queryFn: getProducts,
     initialPageParam: 0,
+    refetchOnWindowFocus: false,
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage.length === 0) {
         return undefined

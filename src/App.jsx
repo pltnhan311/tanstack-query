@@ -1,3 +1,4 @@
+import Foods from './components/Foods'
 import { Products } from './components/Products'
 import Projects from './components/Projects'
 import { Todo } from './components/Todo'
@@ -9,7 +10,8 @@ function App() {
       {/* <Users /> */}
       {/* <Projects /> */}
       {/* <Products /> */}
-      <Todo />
+      {/* <Todo /> */}
+      <Foods />
     </>
   )
 }

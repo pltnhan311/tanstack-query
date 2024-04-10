@@ -1,5 +1,48 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createTodo, createUser, deleteUser, updateUser } from './api'
+import {
+  createFood,
+  createTodo,
+  createUser,
+  deleteFood,
+  deleteUser,
+  updateFood,
+  updateUser,
+} from './api'
+
+export function useDeleteFood() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id) => deleteFood(id),
+    onSuccess: async () => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({ queryKey: ['foods'] })
+    },
+  })
+}
+
+export function useUpdateFood() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data) => updateFood(data),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['foods'] })
+      await queryClient.invalidateQueries({ queryKey: ['food', { id: data.id }] })
+    },
+  })
+}
+
+export function useCreateFood() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (data) => createFood(data),
+    onSuccess: async () => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({ queryKey: ['foods'] })
+    },
+  })
+}
 
 export function useCreateTodo() {
   const queryClient = useQueryClient()
@@ -10,7 +53,7 @@ export function useCreateTodo() {
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['todos'] })
-    }
+    },
   })
 }
 
@@ -27,16 +70,9 @@ export function useCreateUser() {
     onError: () => {
       console.log('onError')
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log('onSuccess')
-    },
-    onSettled: async (_, error) => {
-      console.log('onSettled')
-      if (error) {
-        console.log(error)
-      } else {
-        await queryClient.invalidateQueries({ queryKey: ['users'] })
-      }
+      await queryClient.invalidateQueries({ queryKey: ['users'] })
     },
   })
 }
@@ -61,7 +97,9 @@ export function useUpdateUser() {
         console.log(error)
       } else {
         await queryClient.invalidateQueries({ queryKey: ['users'] })
-        await queryClient.invalidateQueries({ queryKey: ['user', { id: variables.id }] })
+        await queryClient.invalidateQueries({
+          queryKey: ['user', { id: variables.id }],
+        })
       }
     },
   })
