@@ -3,6 +3,7 @@ import { useFood, useFoods, useFoodsInfinite, useFoodsPaginated } from '../servi
 import { useForm } from 'react-hook-form'
 import { useCreateFood, useDeleteFood, useUpdateFood } from '../services/mutations'
 import { Flex, Input, Button, Typography } from 'antd'
+import './Food.css'
 
 const Foods = () => {
   const { Title } = Typography
@@ -12,7 +13,15 @@ const Foods = () => {
   const { register, handleSubmit } = useForm()
 
   // const { data, error, isPending, isError } = useFoods()
-  // const { data, error, isPending, isError, isPlaceholderData, isFetching } = useFoodsPaginated(page)
+  const {
+    data: dataP,
+    error: errorP,
+    isPending,
+    isError: isErrorP,
+    isPlaceholderData: isPlaceholderDataP,
+    isFetching: isFetchingP,
+  } = useFoodsPaginated(page)
+
   const {
     data,
     error,
@@ -52,26 +61,35 @@ const Foods = () => {
   }
 
   return (
-    <Flex gap='large'>
+    <Flex justify='center' gap={200}>
       <div>
         <form onSubmit={handleSubmit(onCreateFood)}>
           {mutationCreateFood.error && (
             <h5 onClick={mutationCreateFood.reset}>{mutationCreateFood.error}</h5>
           )}
           <h2>MENU</h2>
-          Food: <Input placeholder='Food name' {...register('name')} />
+          Food: <input placeholder='Food name' {...register('name')} />
           <br />
           <br />
-          Price: <Input placeholder='Price food' {...register('price')} />
+          Price: <input placeholder='Price food' {...register('price')} />
           <br />
           <br />
-          <Button type='primary' size='middle' disabled={mutationCreateFood?.isPending}>
+          Status: <input placeholder='Status food' {...register('status')} />
+          <br />
+          <br />
+          <Button
+            htmlType='submit'
+            type='primary'
+            size='middle'
+            disabled={mutationCreateFood?.isPending}
+          >
             {mutationCreateFood.isPending ? 'Adding...' : 'Add Food'}
           </Button>
         </form>
       </div>
 
       <div>
+        <h2>INFINITY FOOD</h2>
         {status === 'pending' ? (
           <div>Loading...</div>
         ) : isError ? (
@@ -124,88 +142,66 @@ const Foods = () => {
           </div>
         )}
       </div>
+
+      <div>
+        <h2>PAGINATED FOOD</h2>
+        {isPending ? (
+          <div>Loading...</div>
+        ) : isErrorP ? (
+          <div>Error: {errorP.message}</div>
+        ) : (
+          <div>
+            {dataP?.data?.map((item) => (
+              <>
+                <p key={item.id}>
+                  😋{item.name} - 💵{item.price} - {item.status}
+                </p>
+                <Flex wrap='wrap' gap='small'>
+                  <Button type='primary' ghost onClick={() => setSelectedId(item.id)}>
+                    Info
+                  </Button>
+                  <Button
+                    type='primary'
+                    primary
+                    onClick={() => onUpdatePrice(item)}
+                    disabled={mutationUpdateFood.isPending}
+                  >
+                    Update price
+                  </Button>
+                  <Button type='primary' danger onClick={() => onDeleteFood(item.id)}>
+                    Delete
+                  </Button>
+                </Flex>
+              </>
+            ))}
+            <h3>Current page: {page}</h3>
+            <Button onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 1}>
+              Previous Page
+            </Button>
+            <Button
+              onClick={() => {
+                // if (!isPlaceholderData && data.hasMore) {
+                if (!isPlaceholderDataP && dataP?.next !== null) {
+                  setPage((old) => old + 1)
+                }
+              }}
+              // Disable the Next Page button until we know a next page is available
+              // disabled={isPlaceholderData || !data?.hasMore}
+              disabled={isPlaceholderDataP || dataP?.next === null}
+            >
+              Next Page
+            </Button>
+            {isFetchingP ? <span> Loading...</span> : null} <p>{JSON.stringify(queryFood.data)}</p>
+          </div>
+        )}
+      </div>
     </Flex>
   )
 }
 
 export default Foods
 
-/* Dạ em chào anh, tuần trước em ngồi ôn lại các kiến thức Reactjs, thư viện UI.
-
-Sau đó thì em đọc hiểu SRS tài liệu đặc tả NPP và tài liệu đặc tả API NPP
-
-Và em đang có tìm hiểu thêm về TanstackQuery
-
-tại sao lại có 2 keyword
-
-gcTime: 60000, // 60s not work, cache remove query data
-      staleTime: 40000, // 40s data -> old, refetch 
-
-enable: boolean(id)
-
-màn hình timeline là main ? xong tới màn hình Sheet ?
-
-quản lý auth = redux toolkit - persist
-
-sử dụng extraReducers -> builder.addCase để handle 3 trạng thái 'pending, fulfilled, rejected'
-
-dùng createAsyncThunk thay cho async khi gọi api/ -> sử dụng trực tiếp trong createSlice ( signin, re-signin, signout )
-
-
-├── node_modules
-├── public
-│   └── assets
-│       └── images
-├── src
-│   ├── config
-│   │   ├── axios - create nppAxios instance + setup interceptor
-│   │   ├── theme.ts - customize Antd UI
-│   │   └── query-client.ts - tạo queryClient và setup các thông số 
-│   ├── modules
-│   │   ├── _exampleModule
-│   │   │   ├── actions
-│   │   │   ├── components
-│   │   │   ├── features
-│   │   │   │   ├── _exampleFeature
-│   │   │   │   │   ├── components
-│   │   │   │   │   ├── page
-│   │   │   │   │   └── index.tsx
-│   │   │   │   └── ...
-│   │   │   ├── hooks
-│   │   │   ├── index.tsx
-│   │   │   └── schema.ts
-│   │   ├── _layouts
-│   │   │   ├── DashboardLayout.tsx -> màn hình Sheet
-│   │   │   ├── AuthLayout.tsx - <Outlet />
-│   │   │   └── ...
-│   │   ├── dashboard.tsx # landing page
-│   │   └── index.tsx
-│   ├── packages # package
-│   │   ├── excel-template
-│   │   └── ...
-│   ├── shared # shared library
-│   │   ├── actions
-│   │   ├── components
-│   │   ├── hooks
-│   │   ├── constants
-│   │   ├── contexts
-│   │   ├── router
-│   │   ├── schema
-│   │   ├── utils
-│   │   └── ...
-│   ├── store # Redux store
-│   ├── App.tsx
-│   ├── AppProvider.tsx
-│   ├── index.d.ts # declare type for app
-│   ├── main.tsx
-│   └── ...
-├── README.md
-├── package.json
-├── index.html
-└── ...
-
-
-
+/*
 <div>
         {isPending ? (
           <div>Loading...</div>
@@ -256,4 +252,5 @@ dùng createAsyncThunk thay cho async khi gọi api/ -> sử dụng trực tiế
             {isFetching ? <span> Loading...</span> : null} <p>{JSON.stringify(queryFood.data)}</p>
           </div>
         )}
-      </div>*/
+      </div>
+*/

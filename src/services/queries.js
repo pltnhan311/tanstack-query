@@ -21,12 +21,12 @@ export function useFood(id) {
     queryFn: () => getFood(id),
     enabled: !!id, // run if only id is truthy
     placeholderData: () => {
+      // queryClient.getQueryData(['foods'])?.pages?.flat(2)?.find(food => food.id === id),
       const cachedFoods = queryClient.getQueryData(['foods'])
       if (cachedFoods) {
         const foods = cachedFoods.pages?.flat(2)
         return foods?.find((item) => item.id === id)
       }
-      return cachedFoods?.find((item) => item.id === id)
     },
   })
 }
@@ -91,7 +91,7 @@ export function useFoodsInfinite() {
         return undefined
       }
       return lastPageParam + 1
-    }
+    },
   })
 }
 
